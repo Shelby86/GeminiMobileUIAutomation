@@ -62,3 +62,7 @@ def username():
 @pytest.fixture()
 def password():
     return "H@uling2"
+
+@pytest.fixture()
+def web_driver():
+    pass
