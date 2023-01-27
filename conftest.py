@@ -2,6 +2,8 @@ import pytest
 import os
 import time
 import pyodbc
+from webdriver_manager.chrome import ChromeDriverManager
+#
 
 
 from appium import webdriver
@@ -9,6 +11,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from src.testproject.sdk.drivers import webdriver
+from selenium import webdriver
+import time
+from selenium.webdriver.support.select import Select
+import os
 
 
 
@@ -64,5 +70,20 @@ def password():
     return "H@uling2"
 
 @pytest.fixture()
-def web_driver():
-    pass
+def base_url():
+    return "https://dev.geminishale.com"
+
+@pytest.fixture()
+def web_browser():
+    driver = webdriver.Chrome(executable_path='GeminiMobileUIAutomation/tests/chromedriver')
+    return driver
+
+
+@pytest.fixture()
+def web_username():
+    return 'shelby.nester@geminishale.com'
+
+
+@pytest.fixture()
+def web_password():
+    return 'W0rk3rB33!'
