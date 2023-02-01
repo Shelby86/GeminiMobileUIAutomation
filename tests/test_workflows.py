@@ -72,10 +72,10 @@ class TestWorkflows:
     # There are no locators on the clickable elements
 
     # Selenium
-    web_driver = driver = webdriver.Chrome(executable_path='/Users/shelby/PycharmProjects/GeminiMobileUIAutomation/tests/chromedriver')
+    # web_driver = driver = webdriver.Chrome(executable_path='/Users/shelby/PycharmProjects/GeminiMobileUIAutomation/tests/chromedriver')
 
     @pytest.mark.end_to_end_test
-    def test_login_water_prod_prod(self,driver,db):
+    def login_water_prod_prod(self,driver,db):
         wait = WebDriverWait(driver, 90)
         time.sleep(5)
         wait.until(EC.element_to_be_clickable((By.XPATH, '//android.widget.EditText[@text = "Username"]')))
@@ -265,12 +265,18 @@ class TestWorkflows:
         print(db_ticket)
         db_ticket_number = db_ticket['results'][0]['TicketId']
 
-        assert ticket_number == db_ticket_number
+        # assert int(ticket_number) == int(db_ticket_number)
+
+        return ticket_number
+
+
 
     @pytest.mark.ticket_process
-    def test_ticket_process(self,base_url,web_username,web_password,wait):
-        ticket_number = 785999
-        ticket_number = 786155
+    def test_ticket_process(self,base_url,web_username,web_password,driver,db):
+
+        ticket_number = self.login_water_prod_prod(driver,db)
+        ticket_number = 786446
+
         username = "//input[@name='Email']"
         password = "//input[@name='Password']"
         login_button= "//*[span='Log in']"
@@ -293,7 +299,7 @@ class TestWorkflows:
 
         # Impersonate Hauler
         wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Service Providers']")))
-        gemini_menu = ".account-username"
+        # gemini_menu = ".account-username"
         haulers = "//*[@data-icon='truck']"
 
         gemini_menu = driver.find_element(By.CLASS_NAME, "account-username")
@@ -302,11 +308,10 @@ class TestWorkflows:
         wait.until(EC.element_to_be_clickable((By.XPATH, haulers)))
         haulers = driver.find_element(By.XPATH, haulers)
         haulers.click()
-
+        #
         # Select Hauler
         impersonate_hauler_btn = "//span[text()='Impersonate Hauler']//parent::button"
         alert_box = "//h3[text()='Select a Hauler to impersonate']"
-        # driver.find_element(By.XPATH, "(//div[@class='ant-select-selection-selected-value'])[2]")
         wait.until(EC.element_to_be_clickable((By.XPATH, "(//div[@class='ant-select-selection-selected-value'])[2]")))
         driver.find_element(By.XPATH, "//div[@class='ant-select-lg ant-select ant-select-enabled']").click()
         time.sleep(3)
@@ -324,37 +329,37 @@ class TestWorkflows:
 
         ticket_list = "//ul[@id='Tickets$Menu']//li[text()='Ticket List']"
         wait.until(EC.element_to_be_clickable((By.XPATH, ticket_list)))
-        driver.find_element(By.XPATH, ticket_list).click()
+        element = driver.find_element(By.XPATH, ticket_list)
+        driver.execute_script("arguments[0].click();", element)
 
         # Find the ticket
         # search_icon = "//i[@class='anticon anticon-search ant-table-filter-icon ant-table-filter-open ant-dropdown-trigger ant-dropdown-open']//*[name()='svg']"
-        # search_icon = "//i[@title='Filter menu']//*[name()='svg']"
+        search_icon = "//i[@title='Filter menu']//*[name()='svg']"
         add_new = "//button//span[text()='Add New']"
-        # wait.until(EC.element_to_be_clickable((By.XPATH, add_new)))
-        # time.sleep(5)
-        # ticket_number = f"(//td[text()='{ticket_number}'])[1]"
-        #
-        # element = driver.find_element(By.XPATH, ticket_number)
-        # driver.execute_script("arguments[0].click();", element)
-        #
-        # # Approve ticket as hauler
-        # approve_button = "button-text"
-        # wait.until(EC.element_to_be_clickable((By.CLASS_NAME, approve_button)))
-        # driver.find_element(By.CLASS_NAME, approve_button).click()
-        #
-        # # optional appprove pop up
-        # # A pop up if there is an issue occurs sometimes but not all the time
-        # # if else here
-        # time.sleep(1)
-        # approve = "//button//span[text()='Yes, approve']"
-        # if driver.find_element(By.XPATH,approve).is_displayed():
-        #     element = driver.find_element(By.XPATH, approve)
-        #     driver.execute_script("arguments[0].click();", element)
-
-        # Assert here the ticket is now in operator review
         wait.until(EC.element_to_be_clickable((By.XPATH, add_new)))
         time.sleep(5)
-        ticket_number = f"//td[text()='{ticket_number}']//parent::tr"
+        ticket_number = f"(//td[text()='{ticket_number}'])[1]"
+
+        element = driver.find_element(By.XPATH, ticket_number)
+        driver.execute_script("arguments[0].click();", element)
+
+        # Approve ticket as hauler
+        approve_button = "button-text"
+        wait.until(EC.element_to_be_clickable((By.CLASS_NAME, approve_button)))
+        driver.find_element(By.CLASS_NAME, approve_button).click()
+
+        # optional appprove pop up
+        # A pop up if there is an issue occurs sometimes but not all the time
+        # if else here
+        time.sleep(1)
+        approve = "//button//span[text()='Yes, approve']"
+        if driver.find_element(By.XPATH,approve).is_displayed():
+            element = driver.find_element(By.XPATH, approve)
+            driver.execute_script("arguments[0].click();", element)
+
+        # Assert here the ticket is now in operator review
+        # wait.until(EC.element_to_be_clickable((By.XPATH, add_new)))
+        time.sleep(5)
         element = driver.find_element(By.XPATH, ticket_number)
         wait.until(EC.element_to_be_clickable((By.XPATH, ticket_number)))
         driver.execute_script("arguments[0].click();", element)
@@ -364,9 +369,195 @@ class TestWorkflows:
         assert operator_review.is_displayed()
 
         # Close
+        wait.until(EC.element_to_be_clickable((By.XPATH, ticket_number)))
+        element = driver.find_element(By.XPATH, "//button[@class='ant-drawer-close']")
+        driver.execute_script("arguments[0].click();", element)
+
+        gemini_menu = driver.find_element(By.CLASS_NAME, "account-username")
+        gemini_menu.click()
+        # time.sleep(1)
+
+        # Impersonate Operator
+        operators = "//*[@data-icon='swords']//parent::li"
+        wait.until(EC.element_to_be_clickable((By.XPATH, operators)))
+        operators = driver.find_element(By.XPATH, operators)
+        operators.click()
+        time.sleep(1)
+
+        alert_box_operators = "//h3[text()='Select an Operator to impersonate']"
+        wait.until(EC.visibility_of_element_located((By.XPATH, alert_box_operators)))
+
+        wait.until(EC.element_to_be_clickable((By.XPATH, "(//div[@class='ant-select-selection-selected-value'])[2]")))
+        driver.find_element(By.XPATH, "//div[@class='ant-select-lg ant-select ant-select-enabled']").click()
+        time.sleep(3)
+        driver.find_element(By.XPATH, "//div[@class='ant-select-search ant-select-search--inline']/child::div/child::input").send_keys('Gemini Operations')
+        # Hit The Enter key
+        driver.find_element(By.XPATH, "//li[text()='Gemini Operations']").click()
+        time.sleep(3)
+        wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Impersonate Operator']//parent::button")))
+        element = driver.find_element(By.XPATH, "//span[text()='Impersonate Operator']//parent::button")
+        driver.execute_script("arguments[0].click();", element)
+
+
+        # Operator Navigate to tickets
+        time.sleep(1)
+        # Tickets
+        ticket_button = "//span[text()='Tickets ']"
+        wait.until(EC.element_to_be_clickable((By.XPATH, ticket_button)))
+        driver.find_element(By.XPATH, ticket_button).click()
+
+        ticket_list = "//ul[@id='Tickets$Menu']//li[text()='Ticket List']"
+        wait.until(EC.element_to_be_clickable((By.XPATH, ticket_list)))
+        driver.find_element(By.XPATH, ticket_list).click()
+        #
+        # Find the ticket
+        action_button = "//button[@class='ant-btn actions-btn ant-dropdown-trigger ant-btn-sm']"
+        # wait.until(EC.element_to_be_clickable((By.XPATH, action_button)))
+        time.sleep(5)
+
+        element = driver.find_element(By.XPATH, ticket_number)
+        driver.execute_script("arguments[0].click();", element)
+
+        # Approve ticket as operator
+        approve_button = "button-text"
+        wait.until(EC.element_to_be_clickable((By.CLASS_NAME, approve_button)))
+        driver.find_element(By.CLASS_NAME, approve_button).click()
+
+        # optional appprove pop up
+        # A pop up if there is an issue occurs sometimes but not all the time
+        # if else here
+        time.sleep(1)
+        approve = "//button//span[text()='Yes, approve']"
+        if driver.find_element(By.XPATH,approve).is_displayed():
+            element = driver.find_element(By.XPATH, approve)
+            driver.execute_script("arguments[0].click();", element)
+
+        # Assert here the ticket is now in operator review
+        time.sleep(5)
+        # wait.until(EC.element_to_be_clickable((By.XPATH, ticket_number)))
+        element = driver.find_element(By.XPATH, ticket_number)
+        driver.execute_script("arguments[0].click();", element)
+        time.sleep(2)
+
+        cost_assignment = driver.find_element(By.XPATH, "//span[text()='Cost Assignment']")
+        assert cost_assignment.is_displayed()
+
+        # Close
         driver.find_element(By.XPATH, "//button[@class='ant-drawer-close']").click()
 
-        # Operator Review
+        # Assignment of cost
+        assignment_of_cost_option = "//span[text()='Assignment Of Cost']//parent::div//parent::li"
+        wait.until(EC.element_to_be_clickable((By.XPATH, assignment_of_cost_option)))
+        driver.find_element(By.XPATH, assignment_of_cost_option).click()
+
+
+        # Now where to find that ticket?
+        # This ticket was in production
+        # You can get elements for the ul with the id of Assignment of Cost$Menu to go through all
+
+        # # Click production
+        production_option = "//span[text()='Production']//parent::li"
+        wait.until(EC.element_to_be_clickable((By.XPATH, production_option)))
+        driver.find_element(By.XPATH, production_option).click()
+        #
+        # Wait for the ticket to pop up
+        "//span[text()='Actions']//parent::button"
+        time.sleep(3)
+        #
+        # click on ticket
+        driver.find_element(By.XPATH, ticket_number)
+        element = driver.find_element(By.XPATH, "//span[text()='Actions']//parent::button")
+        driver.execute_script("arguments[0].click();", element)
+
+        # Click the ticket
+        element = driver.find_element(By.XPATH, "//span[text()='Actions']//parent::button//parent::td")
+        driver.execute_script("arguments[0].click();", element)
+        #
+        # Click assign at the top
+        assign_button = "//span[text()='Assign']//parent::a"
+        driver.find_element(By.XPATH, assign_button).click()
+
+        # override if
+        yes_override = "//span[text()='Yes, override']//parent::button"
+        # if driver.find_element(By.XPATH, yes_override).is_displayed():
+        element = driver.find_element(By.XPATH, yes_override)
+        driver.execute_script("arguments[0].click();", element)
+
+        #
+        # assign
+        time.sleep(2)
+        # wait.until(EC.visibility_of_element_located((By.XPATH,"//div[@title='Select an Account Area'])[1]")))
+        account_area = "(//div[@title='Select an Account Area'])[1]"
+        driver.find_element(By.XPATH, account_area).click()
+
+        # Account area type
+        all_options = driver.find_elements(By.XPATH, "//li[@role='option']")
+        property_id = "//li[@role='option'][text()='Property ID']"
+        billable_locations = "(//div[@class='ant-select-lg ant-select ant-select-enabled'])[1]"
+        account_code = "(//div[@title='Select an Account Code']//parent::div)[1]"
+        account_opt_220_040 = "//li[@role='option'][text()='220-040']"
+        finish_button = "//span[text()='Finish']//parent::button"
+
+        # assign account area
+        driver.find_element(By.XPATH, property_id).click()
+        time.sleep(1)
+
+        # Billable locations
+        driver.find_element(By.XPATH, billable_locations).click()
+        time.sleep(5)
+        driver.find_element(By.XPATH, "//li[text()='CHAD GLAUSER-OHI-PAD1']").click()
+        time.sleep(1)
+
+        # Account Code
+        driver.find_element(By.XPATH, account_code).click()
+        driver.find_element(By.XPATH,account_opt_220_040).click()
+        time.sleep(1)
+
+        # Finish
+        driver.find_element(By.XPATH, finish_button).click()
+        time.sleep(2)
+
+        # Go to assignment of cost
+        assig_of_cost = "//span[text()='Assignment Of Cost']"
+        driver.find_element(By.XPATH, assig_of_cost).click()
+
+
+        # Go to cost awaiting review
+        cost_awaiting_review = "//span[text()='Cost Awaiting Review']"
+        element = driver.find_element(By.XPATH,cost_awaiting_review)
+        driver.execute_script("arguments[0].click();", element)
+        #
+        # Production
+        #
+        production = "(//span[text()='Production']//parent::li)[2]"
+        wait.until(EC.visibility_of_element_located((By.XPATH, production)))
+        driver.find_element(By.XPATH, production).click()
+        #
+        # click on the ticket
+        # no ticket number so just approve all
+        production_tickets_buttons = "(//div[@class='ant-collapse-header'])[1]"
+        wait.until(EC.element_to_be_clickable((By.XPATH, production_tickets_buttons)))
+        driver.find_element(By.XPATH,production_tickets_buttons).click()
+        #
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

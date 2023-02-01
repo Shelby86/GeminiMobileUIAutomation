@@ -11,7 +11,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from src.testproject.sdk.drivers import webdriver
-from selenium import webdriver
 import time
 from selenium.webdriver.support.select import Select
 import os
@@ -72,11 +71,6 @@ def password():
 @pytest.fixture()
 def base_url():
     return "https://dev.geminishale.com"
-
-@pytest.fixture()
-def web_browser():
-    driver = webdriver.Chrome(executable_path='GeminiMobileUIAutomation/tests/chromedriver')
-    return driver
 
 
 @pytest.fixture()
