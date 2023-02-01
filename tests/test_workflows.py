@@ -333,8 +333,7 @@ class TestWorkflows:
         driver.execute_script("arguments[0].click();", element)
 
         # Find the ticket
-        # search_icon = "//i[@class='anticon anticon-search ant-table-filter-icon ant-table-filter-open ant-dropdown-trigger ant-dropdown-open']//*[name()='svg']"
-        search_icon = "//i[@title='Filter menu']//*[name()='svg']"
+
         add_new = "//button//span[text()='Add New']"
         wait.until(EC.element_to_be_clickable((By.XPATH, add_new)))
         time.sleep(5)
