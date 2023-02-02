@@ -125,9 +125,10 @@ class TestWeb:
     @pytest.mark.approve_ticket_2
     def test_approve_ticket(self,username,password,db,driver,web_username,web_password,base_url):
         ticket_number = MobileSetUp.simple_ticket(self,driver,username,password)
+        # ticket_number = 786507
         ticket_number = f"(//td[text()='{ticket_number}'])[1]"
 
-        # login
+        # # login
         driver = webdriver.Chrome(
             executable_path='/Users/shelby/PycharmProjects/GeminiMobileUIAutomation/tests/chromedriver')
         driver.get(url=base_url)
@@ -143,7 +144,7 @@ class TestWeb:
 
         # Click Gemini Menu
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME, self.gemini_menu)))
-        gemini_menu = driver.find_element(By.CLASS_NAME, self.gemini_menu)
+        gemini_menu = driver.find_element(By.CLASS_NAME,self.gemini_menu)
         gemini_menu.click()
 
         # Impersonate a Hauler
@@ -168,13 +169,15 @@ class TestWeb:
         driver.find_element(By.XPATH, self.tickets_dropdown).click()
 
         # Select ticket lists
+        time.sleep(5)
         wait.until(EC.element_to_be_clickable((By.XPATH, self.ticket_list)))
         element = driver.find_element(By.XPATH, self.ticket_list)
         driver.execute_script("arguments[0].click();", element)
 
         # Find the ticket
-        wait.until(EC.element_to_be_clickable((By.XPATH, self.add_new)))
-        time.sleep(2)
+        # wait.until(EC.element_to_be_clickable((By.XPATH, self.add_new)))
+        wait.until(EC.visibility_of_element_located((By.XPATH, "//span[text()='Tickets']")))
+        time.sleep(6)
         element = driver.find_element(By.XPATH, ticket_number)
         driver.execute_script("arguments[0].click();", element)
 
@@ -195,6 +198,7 @@ class TestWeb:
         element = driver.find_element(By.XPATH, ticket_number)
         wait.until(EC.element_to_be_clickable((By.XPATH, ticket_number)))
         driver.execute_script("arguments[0].click();", element)
+        time.sleep(3)
         wait.until(EC.visibility_of_element_located((By.XPATH, "//span[text()='Operator Review']")))
         operator_review = driver.find_element(By.XPATH, "//span[text()='Operator Review']")
         assert operator_review.is_displayed()
@@ -205,19 +209,23 @@ class TestWeb:
         driver.execute_script("arguments[0].click();", element)
 
         # Click Gemini Menu
-        gemini_menu.click()
-
+        time.sleep(10)
+        e = driver.find_element_by_id("accountNav")
+        location = e.location
+        size = e.size
+        w, h = size['width'], size['height']
+        driver.find_element(By.ID, "accountNav").click()
+        time.sleep(3)
         # Impersonate an Operator
-        wait.until(EC.element_to_be_clickable((By.XPATH, self.imp_operator)))
-        driver.find_element(By.XPATH, self.imp_operator).click()
-        time.sleep(1)
+        driver.find_element_by_xpath("(//*[text()='Operators']//parent::li)[2]").click()
 
         # Select Operator
         operator = "Gemini Operations"
+        "//div[@class='ant-select-lg ant-select ant-select-enabled']"
         wait.until(EC.element_to_be_clickable((By.XPATH, self.pop_up_box_select_menu)))
         driver.find_element(By.XPATH, self.pop_up_box_select_drop_down_clicked).click()
         time.sleep(3)
-        driver.find_element(By.XPATH, self.pop_up_input_field).send_keys(operator)
+        # driver.find_element(By.XPATH, "//*[text()='Select']").send_keys(operator)
         # Hit The Enter key
         driver.find_element(By.XPATH, f"//li[text()='{operator}']").click()
         time.sleep(1)
@@ -234,7 +242,8 @@ class TestWeb:
         driver.execute_script("arguments[0].click();", element)
 
         # Find the ticket
-        time.sleep(2)
+        # wait.until(EC.visibility_of_element_located((By.XPATH, "//div[@title='Filter menu']")))
+        time.sleep(6)
         element = driver.find_element(By.XPATH, ticket_number)
         driver.execute_script("arguments[0].click();", element)
 
@@ -254,6 +263,7 @@ class TestWeb:
         element = driver.find_element(By.XPATH, ticket_number)
         driver.execute_script("arguments[0].click();", element)
         wait.until(EC.visibility_of_element_located((By.XPATH,"//span[text()='Cost Assignment']//parent::div")))
+        time.sleep(3)
         driver.find_element(By.XPATH, self.close_button).click()
 
         # Go to Assignment of Cost
@@ -294,7 +304,7 @@ class TestWeb:
 
         # Billable locations
         driver.find_element(By.XPATH, self.billable_locations).click()
-        time.sleep(5)
+        time.sleep(6)
         driver.find_element(By.XPATH, "//li[text()='CHAD GLAUSER-OHI-PAD1']").click()
         time.sleep(1)
 
@@ -349,6 +359,8 @@ class TestWeb:
         # Assert Ticket Status is 11 (Cost Awaiting Review)
         ticket_status_id = db_ticket['results'][0]['TicketStatusId']
         assert int(ticket_status_id) == 11
+
+        driver.quit()
 
 
 

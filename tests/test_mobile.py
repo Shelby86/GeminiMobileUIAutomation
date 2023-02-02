@@ -41,3 +41,9 @@ class TestMobile:
         db_ticket_number = db_ticket['results'][0]['TicketId']
 
         assert int(ticket_number) == int(db_ticket_number)
+
+
+    def test_milk_run(self,driver,username,password,db):
+        MobileSetUp.mobile_login(self,driver,username,password)
+
+

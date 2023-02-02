@@ -38,38 +38,38 @@ class WebSetUp:
         # login
         time.sleep(5)
         wait = WebDriverWait(driver, 90)
-        wait.until(EC.element_to_be_clickable((By.XPATH, self.login_button)))
-        email = driver.find_element(By.XPATH, self.username)
+        wait.until(EC.element_to_be_clickable((By.XPATH, login_button)))
+        email = driver.find_element(By.XPATH, username)
         email.send_keys(web_username)
 
-        password = driver.find_element(By.XPATH, self.password)
+        password = driver.find_element(By.XPATH, password)
         password.send_keys(web_password)
 
-        driver.find_element(By.XPATH, self.login_button).click()
+        driver.find_element(By.XPATH, login_button).click()
 
 
     def impersonate_hauler(self):
         driver = webdriver.Chrome(
             executable_path='/Users/shelby/PycharmProjects/GeminiMobileUIAutomation/tests/chromedriver')
         wait = WebDriverWait(driver, 90)
-        wait.until(EC.element_to_be_clickable((By.CLASS_NAME, self.gemini_menu)))
+        wait.until(EC.element_to_be_clickable((By.CLASS_NAME, gemini_menu)))
 
-        gemini_menu = driver.find_element(By.CLASS_NAME, self.gemini_menu)
+        gemini_menu = driver.find_element(By.CLASS_NAME, gemini_menu)
         gemini_menu.click()
 
-        wait.until(EC.element_to_be_clickable((By.XPATH, self.imp_haulers)))
-        haulers = driver.find_element(By.XPATH, self.imp_haulers)
+        wait.until(EC.element_to_be_clickable((By.XPATH, imp_haulers)))
+        haulers = driver.find_element(By.XPATH, imp_haulers)
         haulers.click()
 
         hauler = "U Call We Haul'"
 
         # Select Hauler
-        wait.until(EC.element_to_be_clickable((By.XPATH, self.pop_up_box_select_menu)))
-        driver.find_element(By.XPATH, self.pop_up_box_select_drop_down_clicked).click()
+        wait.until(EC.element_to_be_clickable((By.XPATH, pop_up_box_select_menu)))
+        driver.find_element(By.XPATH, pop_up_box_select_drop_down_clicked).click()
         time.sleep(3)
-        driver.find_element(By.XPATH, self.pop_up_input_field).send_keys(hauler)
+        driver.find_element(By.XPATH, pop_up_input_field).send_keys(hauler)
         # Hit The Enter key
         driver.find_element(By.XPATH, f"//li[text()='{hauler}']").click()
         time.sleep(1)
-        driver.find_element(By.XPATH, self.impersonate_hauler_btn).click()
+        driver.find_element(By.XPATH, impersonate_hauler_btn).click()
         time.sleep(5)
